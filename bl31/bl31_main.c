@@ -104,8 +104,9 @@ void bl31_setup(u_register_t arg0, u_register_t arg1, u_register_t arg2,
  ******************************************************************************/
 void bl31_main(void)
 {
-	NOTICE("BL31: %s\n", version_string);
-	NOTICE("BL31: %s\n", build_message);
+	printf("\n");
+	printf("[ATF] BL31: %s\n", version_string);
+	printf("[ATF] BL31: %s\n", build_message);
 
 #ifdef SUPPORT_UNKNOWN_MPID
 	if (unsupported_mpid_flag == 0) {
@@ -212,8 +213,12 @@ void __init bl31_prepare_next_image_entry(void)
 	assert(next_image_info != NULL);
 	assert(image_type == GET_SECURITY_STATE(next_image_info->h.attr));
 
-	INFO("BL31: Preparing for EL3 exit to %s world\n",
-		(image_type == SECURE) ? "secure" : "normal");
+	printf("[ATF] BL31: Start: 0x%lx End: 0x%lx size: %ld kB\n", BL31_START,
+			BL31_END, (BL31_END - BL31_START)/1024);
+	printf("[ATF] BL31: Preparing for EL3 exit to %s world\n",
+			(image_type == SECURE) ? "secure" : "normal");
+	printf("[ATF] BL31: Jumping to 0x%lx", next_image_info->pc);
+
 	print_entry_point_info(next_image_info);
 	cm_init_my_context(next_image_info);
 	cm_prepare_el3_exit(image_type);
