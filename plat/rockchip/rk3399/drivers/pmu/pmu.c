@@ -1552,7 +1552,12 @@ void __dead2 rockchip_soc_system_off(void)
 		gpio_set_direction(poweroff_gpio->index, GPIO_DIR_OUT);
 		gpio_set_value(poweroff_gpio->index, poweroff_gpio->polarity);
 	} else {
-		WARN("Do nothing when system off\n");
+		NOTICE("Doing kludged GPIO poweroff\n");
+
+		mmio_write_32(PMUGRF_BASE + PMUGRF_GPIO1A_IOMUX, GPIO1A6_IOMUX);
+		gpio_set_direction(TSADC_INT_PIN, GPIO_DIR_OUT);
+		gpio_set_value(TSADC_INT_PIN, 1);
+		// after around 10 ms system is powered off
 	}
 
 	while (1)
