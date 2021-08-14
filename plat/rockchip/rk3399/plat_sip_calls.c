@@ -24,9 +24,6 @@
 #define DRAM_SET_PARAM		0x07
 #define DRAM_SET_ODT_PD		0x08
 
-#define RK_SIP_HDCP_CONTROL	0x82000009
-#define RK_SIP_HDCP_KEY_DATA64	0xC200000A
-
 uint32_t ddr_smc_handler(uint64_t arg0, uint64_t arg1,
 			 uint64_t id, uint64_t arg2)
 {
@@ -56,21 +53,9 @@ uintptr_t rockchip_plat_sip_handler(uint32_t smc_fid,
 				    void *handle,
 				    u_register_t flags)
 {
-#ifdef PLAT_RK_DP_HDCP
-	uint64_t x5, x6;
-#endif
-
 	switch (smc_fid) {
 	case RK_SIP_DDR_CFG:
 		SMC_RET1(handle, ddr_smc_handler(x1, x2, x3, x4));
-#ifdef PLAT_RK_DP_HDCP
-	case RK_SIP_HDCP_CONTROL:
-		SMC_RET1(handle, dp_hdcp_ctrl(x1));
-	case RK_SIP_HDCP_KEY_DATA64:
-		x5 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X5);
-		x6 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X6);
-		SMC_RET1(handle, dp_hdcp_store_key(x1, x2, x3, x4, x5, x6));
-#endif
 	default:
 		ERROR("%s: unhandled SMC (0x%x)\n", __func__, smc_fid);
 		SMC_RET1(handle, SMC_UNK);
